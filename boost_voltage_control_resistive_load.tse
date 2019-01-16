@@ -1,0 +1,473 @@
+version = 4.2
+
+//
+// Saved by sw version: 2018.4
+// Save timestamp: 16-Jan-2019 @ 04:43:57 PM
+//
+
+model "boost_voltage_control_resistive_load" {
+    configuration {
+        hil_device = "HIL402"
+        hil_configuration_id = 1
+        simulation_method = exact
+        simulation_time_step = auto
+        simulation_discret_scaling = 1.0
+        dsp_timer_periods = 100e-6, 50e-3
+        ss_calc_method = "systematic elimination"
+        enb_pole_shift = True
+        enb_gds_oversampling = True
+        show_modes = False
+        device_ao_limit_enable = False
+        cpl_stb = False
+        enb_dep_sw_detect = False
+        code_section = "internal memory"
+        data_section = "internal memory"
+        sys_sp_rate_1 = 0.0001
+        sys_sp_rate_2 = 0.05
+        sys_real_type_precision = "default"
+        user_real_type_precision = "default"
+        sys_cpu_optimization = "high"
+        user_cpu_optimization = "high"
+    }
+
+    component Subsystem Root {
+        component Subsystem Bidiretional {
+            layout = dynamic
+            component src_scada_input Enable {
+                format = "int"
+                max = "1"
+                min = "0"
+                signal_type = "int"
+                unit = ""
+            }
+            [
+                position = 8240, 8144
+                scale = -1, 1
+            ]
+
+            component pas_inductor Lin {
+                inductance = "24e-5"
+            }
+            [
+                position = 7992, 8192
+            ]
+
+            component src_voltage Input {
+            }
+            [
+                position = 7904, 8232
+                rotation = right
+            ]
+
+            component src_scada_input Modulator {
+                max = "1"
+                min = "0"
+                unit = ""
+            }
+            [
+                position = 8240, 8200
+                scale = -1, 1
+            ]
+
+            component pas_resistor RL {
+                resistance = "4.813"
+            }
+            [
+                position = 8480, 8192
+                rotation = right
+            ]
+
+            component pas_capacitor Cout {
+                capacitance = "76.54e-6"
+            }
+            [
+                position = 8376, 8192
+                rotation = right
+            ]
+
+            component "core/IGBT Leg" "IGBT Leg1" {
+                carr_ph_offset = "180"
+                carrier_freq = "20000.0"
+                ctrl_src = "Internal modulator"
+                d_time = "5e-7"
+                ref_sig_min_max = "[0, 1.0]"
+            }
+            [
+                position = 8112, 8192
+                scale = -1, 1
+                size = 80, 192
+            ]
+
+            junction Junction1 pe
+            [
+                position = 8376, 8088
+            ]
+
+            junction Junction2 pe
+            [
+                position = 8376, 8296
+            ]
+
+            connect Cout.n_node Junction2 as Connection11
+            [
+                breakpoints = 8376, 8232; 8376, 8296
+            ]
+            connect Lin.n_node "IGBT Leg1.a_in" as Connection3
+            connect "IGBT Leg1.pos_out" Junction1 as Connection5
+            connect Modulator.out "IGBT Leg1.In" as Connection12
+            connect Junction1 RL.p_node as Connection6
+            connect Enable.out "IGBT Leg1.En" as Connection13
+            connect Input.n_node "IGBT Leg1.neg_out" as Connection2
+            connect Junction2 "IGBT Leg1.neg_out" as Connection10
+            connect Lin.p_node Input.p_node as Connection1
+            connect RL.n_node Junction2 as Connection9
+            connect Cout.p_node Junction1 as Connection7
+        }
+        [
+            position = 8744, 8256
+            size = 48, 48
+        ]
+
+        component src_voltage Input {
+        }
+        [
+            position = 8240, 8504
+            rotation = right
+        ]
+
+        component pas_inductor Lin {
+            inductance = "24e-5"
+        }
+        [
+            position = 8328, 8448
+        ]
+
+        component "core/Boost" Boost {
+            carrier_freq = "20000.0"
+            ctrl_src = "Internal modulator"
+            d_time = "5e-7"
+            ref_sig_min_max = "[0.0, 1.0]"
+        }
+        [
+            position = 8472, 8544
+            size = 128, 256
+        ]
+
+        component pas_capacitor Cout {
+            capacitance = "76.54e-6"
+        }
+        [
+            position = 8720, 8520
+            rotation = right
+        ]
+
+        component pas_resistor RL {
+            resistance = "4.813"
+        }
+        [
+            position = 8824, 8520
+            rotation = right
+        ]
+
+        component src_scada_input Enable {
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 8432, 8368
+        ]
+
+        component gen_pid_controller "PID controller1" {
+            controller_type = "PI"
+            enb_output_limit_out = "True"
+            ki = "2.47"
+            kp = "0.0007442"
+            lower_sat_lim = "0"
+        }
+        [
+            position = 8416, 8288
+        ]
+
+        component "core/Voltage Measurement" Vout {
+            sig_output = "True"
+        }
+        [
+            position = 8904, 8528
+            rotation = right
+            size = 64, 32
+        ]
+
+        component gen_sum Sum1 {
+            signs = "-+"
+        }
+        [
+            position = 8328, 8288
+        ]
+
+        component src_scada_input Voltage_reference {
+            unit = ""
+        }
+        [
+            position = 8232, 8352
+        ]
+
+        tag Goto1 {
+            value = "Output_voltage"
+            scope = global
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8976, 8528
+        ]
+
+        tag From1 {
+            value = "Output_voltage"
+            scope = global
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8240, 8280
+        ]
+
+        junction Junction1 pe
+        [
+            position = 8720, 8448
+        ]
+
+        junction Junction2 pe
+        [
+            position = 8720, 8640
+        ]
+
+        junction Junction3 pe
+        [
+            position = 8824, 8448
+        ]
+
+        junction Junction4 pe
+        [
+            position = 8824, 8640
+        ]
+
+        connect Lin.p_node Input.p_node as Connection19
+        [
+            breakpoints = 8280, 8448; 8240, 8448
+        ]
+        connect Cout.p_node Junction1 as Connection27
+        connect Boost.a_out Junction1 as Connection29
+        connect Cout.n_node Junction2 as Connection34
+        [
+            breakpoints = 8720, 8592
+        ]
+        connect Junction2 Boost.b_out as Connection35
+        [
+            breakpoints = 8720, 8640
+        ]
+        connect Lin.n_node Boost.a_in as Connection37
+        connect Boost.b_in Input.n_node as Connection38
+        connect Enable.out Boost.En as Connection39
+        connect Junction1 Junction3 as Connection41
+        [
+            breakpoints = 8720, 8448
+        ]
+        connect Junction3 RL.p_node as Connection42
+        connect Vout.p_node Junction3 as Connection43
+        connect RL.n_node Junction4 as Connection44
+        connect Junction4 Junction2 as Connection45
+        connect Vout.n_node Junction4 as Connection46
+        connect Goto1 Vout.out as Connection47
+        connect From1 Sum1.in as Connection48
+        connect Voltage_reference.out Sum1.in1 as Connection49
+        connect Sum1.out "PID controller1.in" as Connection50
+        connect "PID controller1.out" Boost.In as Connection51
+    }
+
+    logically_deleted {
+        "Bidiretional.Junction1"
+        "Bidiretional.Enable"
+        "Bidiretional.Junction2"
+        "Bidiretional.Lin"
+        "Bidiretional.Input"
+        "Bidiretional.Modulator"
+        "Bidiretional.RL"
+        "Bidiretional.Cout"
+        "Bidiretional.IGBT Leg1"
+        "Bidiretional.Connection11"
+        "Bidiretional.Connection3"
+        "Bidiretional.Connection5"
+        "Bidiretional.Connection12"
+        "Bidiretional.Connection6"
+        "Bidiretional.Connection13"
+        "Bidiretional.Connection2"
+        "Bidiretional.Connection10"
+        "Bidiretional.Connection1"
+        "Bidiretional.Connection9"
+        "Bidiretional.Connection7"
+    }
+
+    default {
+        gen_pid_controller {
+            controller_type = "PID"
+            kp = "1"
+            ki = "1"
+            kd = "0"
+            filt_coef = "100"
+            int_init_value = "0"
+            filt_init_value = "0"
+            enb_output_limit_out = "False"
+            upper_sat_lim = "1"
+            lower_sat_lim = "-1"
+            enb_anti_windup_out = "False"
+            signal_out_type = "inherit"
+            execution_rate = "inherit"
+        }
+
+        gen_sum {
+            signs = "2"
+            execution_rate = "inherit"
+        }
+
+        pas_capacitor {
+            capacitance = "1e-6"
+            initial_voltage = "0"
+            pole_shift_ignore = "False"
+            visible = "True"
+        }
+
+        pas_inductor {
+            inductance = "1e-3"
+            initial_current = "0.0"
+            pole_shift_ignore = "False"
+            visible = "True"
+        }
+
+        pas_resistor {
+            resistance = "1"
+        }
+
+        src_scada_input {
+            addr = "0"
+            format = "real"
+            override_signal_name = "False"
+            signal_name = ""
+            signal_type = "real"
+            min = "-1e6"
+            max = "1e6"
+            def_value = "0"
+            unit = " "
+            execution_rate = "100e-6"
+        }
+
+        src_voltage {
+            sig_input = "False"
+            type = "signal generator"
+            param_set = "1phase"
+            parent_label = ""
+            addr = "0"
+            spc_nb = "0"
+            execution_rate = "100e-6"
+            cpd_visible = "True"
+            enable_snb = "False"
+            snb_type = "R2"
+            R2 = "0.0"
+            L1 = "0.1"
+            override_signal_name = "False"
+            signal_name = ""
+            init_source_nature = "Constant"
+            init_const_value = "0.0"
+            init_rms_value = "0.0"
+            init_frequency = "50.0"
+            init_phase = "0.0"
+        }
+
+        "core/Boost" {
+            ctrl_src = "Digital inputs"
+            op_mode = "Fixed carrier frequency"
+            carrier_freq = "10000.0"
+            carr_ph_offset = "0.0"
+            d_time = "5e-6"
+            ref_sig_min_max = "[-1.0, 1.0]"
+            execution_rate = "inherit"
+            S1 = "1"
+            S1_logic = "active high"
+            diode_pos = "upper_leg"
+            losses_estimation = "False"
+            Vce = "1.3"
+            Rce = "0"
+            Vd = "1.2"
+            Rd = "0"
+            i_sw = "[0.0, 6.0, 12.0, 18.0, 24.0]"
+            v_sw = "[0.0, 600.0]"
+            temp_sw = "[25.0, 50.0, 75.0, 100.0, 125.0]"
+            et_on_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*3.8e-3, 0.4*3.8e-3, 0.8*3.8e-3, 0.68*3.8e-3, 0.9*3.8e-3], [0.65*3.8e-3, 0.9*3.8e-3, 1.2*3.8e-3, 1.5*3.8e-3, 1.7*3.8e-3], [0.9*3.8e-3, 1.3*3.8e-3, 1.7*3.8e-3, 1.9*3.8e-3, 2.25*3.8e-3], [1.1*3.8e-3, 1.7*3.8e-3, 2.1*3.8e-3, 2.3*3.8e-3, 2.5*3.8e-3]]"
+            et_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.1e-3, 0.4*2.1e-3, 0.8*2.1e-3, 0.68*2.1e-3, 0.9*2.1e-3], [0.65*2.1e-3, 0.9*2.1e-3, 1.2*2.1e-3, 1.5*2.1e-3, 1.7*2.1e-3], [0.9*2.1e-3, 1.3*2.1e-3, 1.7*2.1e-3, 1.9*2.1e-3, 2.25*2.1e-3], [1.1*2.1e-3, 1.7*2.1e-3, 2.1*2.1e-3, 2.3*2.1e-3, 2.5*2.1e-3]]"
+            ed_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.2e-3, 0.4*2.2e-3, 0.8*2.2e-3, 0.68*2.2e-3, 0.9*2.2e-3], [0.65*2.2e-3, 0.9*2.2e-3, 1.2*2.2e-3, 1.5*2.2e-3, 1.7*2.2e-3], [0.9*2.2e-3, 1.3*2.2e-3, 1.7*2.2e-3, 1.9*2.2e-3, 2.25*2.2e-3], [1.1*2.2e-3, 1.7*2.2e-3, 2.1*2.2e-3, 2.3*2.2e-3, 2.5*2.2e-3]]"
+            loss_exec_rate = "100e-6"
+            show_monitoring = "false"
+        }
+
+        "core/Voltage Measurement" {
+            bw_limit = "False"
+            frequency = "10e3"
+            comparator_enable = "False"
+            operator = "greater"
+            threshold = "0"
+            cmp_abs_value = "False"
+            feed_forward = "false"
+            sig_output = "False"
+            execution_rate = "100e-6"
+            addr = "0"
+            nd_msr_estimation = "false"
+            dev_cpl_msr = "false"
+            host_device = "0"
+            output_to_device = "0"
+            dev_cpl_index = "0"
+            dev_cpl_var_nb = "0"
+            visible = "True"
+            override_signal_name = "False"
+            signal_name = ""
+        }
+
+        "core/IGBT Leg" {
+            ctrl_src = "Digital input per switch"
+            op_mode = "Fixed carrier frequency"
+            carrier_freq = "10000.0"
+            carr_ph_offset = "0.0"
+            d_time = "5e-6"
+            ref_sig_min_max = "[-1.0, 1.0]"
+            execution_rate = "inherit"
+            S_top = "1"
+            S_top_logic = "active high"
+            S_bot = "2"
+            S_bot_logic = "active high"
+            S_top_I = "False"
+            S_bot_I = "False"
+            delay_enabled = "False"
+            fixed_delay = "1e-6"
+            var_delay_lut = "[-10.0, 1e-6, 10.0, 1e-6]"
+            preview_var_delay = "Preview"
+            show_monitoring = "false"
+            losses_estimation = "False"
+            Vce = "1.3"
+            Rce = "0"
+            Vd = "1.2"
+            Rd = "0"
+            i_sw = "[0.0, 6.0, 12.0, 18.0, 24.0]"
+            v_sw = "[0.0, 600.0]"
+            temp_sw = "[25.0, 50.0, 75.0, 100.0, 125.0]"
+            et_on_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*3.8e-3, 0.4*3.8e-3, 0.8*3.8e-3, 0.68*3.8e-3, 0.9*3.8e-3], [0.65*3.8e-3, 0.9*3.8e-3, 1.2*3.8e-3, 1.5*3.8e-3, 1.7*3.8e-3], [0.9*3.8e-3, 1.3*3.8e-3, 1.7*3.8e-3, 1.9*3.8e-3, 2.25*3.8e-3], [1.1*3.8e-3, 1.7*3.8e-3, 2.1*3.8e-3, 2.3*3.8e-3, 2.5*3.8e-3]]"
+            et_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.1e-3, 0.4*2.1e-3, 0.8*2.1e-3, 0.68*2.1e-3, 0.9*2.1e-3], [0.65*2.1e-3, 0.9*2.1e-3, 1.2*2.1e-3, 1.5*2.1e-3, 1.7*2.1e-3], [0.9*2.1e-3, 1.3*2.1e-3, 1.7*2.1e-3, 1.9*2.1e-3, 2.25*2.1e-3], [1.1*2.1e-3, 1.7*2.1e-3, 2.1*2.1e-3, 2.3*2.1e-3, 2.5*2.1e-3]]"
+            ed_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.2e-3, 0.4*2.2e-3, 0.8*2.2e-3, 0.68*2.2e-3, 0.9*2.2e-3], [0.65*2.2e-3, 0.9*2.2e-3, 1.2*2.2e-3, 1.5*2.2e-3, 1.7*2.2e-3], [0.9*2.2e-3, 1.3*2.2e-3, 1.7*2.2e-3, 1.9*2.2e-3, 2.25*2.2e-3], [1.1*2.2e-3, 1.7*2.2e-3, 2.1*2.2e-3, 2.3*2.2e-3, 2.5*2.2e-3]]"
+            loss_exec_rate = "100e-6"
+            show_cnt_out = "False"
+            PESB_Optimization = "True"
+            _control_property = "all high"
+            dtv_flag_en = "True"
+        }
+    }
+}
