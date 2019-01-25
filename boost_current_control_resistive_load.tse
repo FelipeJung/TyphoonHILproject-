@@ -2,7 +2,7 @@ version = 4.2
 
 //
 // Saved by sw version: 2018.4
-// Save timestamp: 17-Jan-2019 @ 11:15:40 AM
+// Save timestamp: 25-Jan-2019 @ 03:18:52 PM
 //
 
 model "boost_current_control_resistive_load" {
@@ -31,107 +31,10 @@ model "boost_current_control_resistive_load" {
     }
 
     component Subsystem Root {
-        component Subsystem Bidiretional {
-            layout = dynamic
-            component src_scada_input Enable {
-                format = "int"
-                max = "1"
-                min = "0"
-                signal_type = "int"
-                unit = ""
-            }
-            [
-                position = 8240, 8144
-                scale = -1, 1
-            ]
-
-            component pas_inductor Lin {
-                inductance = "24e-5"
-            }
-            [
-                position = 7992, 8192
-            ]
-
-            component src_voltage Input {
-            }
-            [
-                position = 7904, 8232
-                rotation = right
-            ]
-
-            component src_scada_input Modulator {
-                max = "1"
-                min = "0"
-                unit = ""
-            }
-            [
-                position = 8240, 8200
-                scale = -1, 1
-            ]
-
-            component pas_resistor RL {
-                resistance = "4.813"
-            }
-            [
-                position = 8480, 8192
-                rotation = right
-            ]
-
-            component pas_capacitor Cout {
-                capacitance = "76.54e-6"
-            }
-            [
-                position = 8376, 8192
-                rotation = right
-            ]
-
-            component "core/IGBT Leg" "IGBT Leg1" {
-                carr_ph_offset = "180"
-                carrier_freq = "20000.0"
-                ctrl_src = "Internal modulator"
-                d_time = "5e-7"
-                ref_sig_min_max = "[0, 1.0]"
-            }
-            [
-                position = 8112, 8192
-                scale = -1, 1
-                size = 80, 192
-            ]
-
-            junction Junction1 pe
-            [
-                position = 8376, 8088
-            ]
-
-            junction Junction2 pe
-            [
-                position = 8376, 8296
-            ]
-
-            connect Cout.n_node Junction2 as Connection11
-            [
-                breakpoints = 8376, 8232; 8376, 8296
-            ]
-            connect Lin.n_node "IGBT Leg1.a_in" as Connection3
-            connect "IGBT Leg1.pos_out" Junction1 as Connection5
-            connect Modulator.out "IGBT Leg1.In" as Connection12
-            connect Junction1 RL.p_node as Connection6
-            connect Enable.out "IGBT Leg1.En" as Connection13
-            connect Input.n_node "IGBT Leg1.neg_out" as Connection2
-            connect Junction2 "IGBT Leg1.neg_out" as Connection10
-            connect Lin.p_node Input.p_node as Connection1
-            connect RL.n_node Junction2 as Connection9
-            connect Cout.p_node Junction1 as Connection7
-        }
-        [
-            position = 8848, 8200
-            size = 48, 48
-        ]
-
         component src_voltage Input {
         }
         [
-            position = 8144, 8528
+            position = 8040, 8632
             rotation = right
         ]
 
@@ -139,7 +42,7 @@ model "boost_current_control_resistive_load" {
             inductance = "24e-5"
         }
         [
-            position = 8328, 8448
+            position = 8328, 8544
         ]
 
         component "core/Boost" Boost {
@@ -149,7 +52,7 @@ model "boost_current_control_resistive_load" {
             ref_sig_min_max = "[0.0, 1.0]"
         }
         [
-            position = 8472, 8544
+            position = 8480, 8640
             size = 128, 256
         ]
 
@@ -157,7 +60,7 @@ model "boost_current_control_resistive_load" {
             capacitance = "200e-6"
         }
         [
-            position = 8656, 8520
+            position = 8656, 8616
             rotation = right
         ]
 
@@ -165,70 +68,54 @@ model "boost_current_control_resistive_load" {
             resistance = "4.813"
         }
         [
-            position = 8744, 8520
+            position = 8744, 8616
             rotation = right
         ]
 
-        component src_scada_input Enable {
-            format = "int"
-            max = "1"
-            min = "0"
-            signal_type = "int"
-            unit = ""
-        }
-        [
-            position = 8392, 8384
-        ]
-
         component "core/Voltage Measurement" Vout {
+            execution_rate = "50e-6"
             sig_output = "True"
         }
         [
-            position = 8824, 8528
+            position = 9016, 8608
             rotation = right
             size = 64, 32
         ]
 
         component "core/Current Measurement" Ia1 {
+            execution_rate = "50e-6"
             sig_output = "True"
         }
         [
-            position = 8232, 8448
+            position = 8224, 8544
             size = 64, 32
         ]
 
         component gen_pid_controller "PID controller1" {
             controller_type = "PI"
             enb_anti_windup_out = "True"
+            enb_output_limit_out = "True"
             ki = "69.090817871"
             kp = "0.554079651"
             lower_sat_lim = "0"
+            upper_sat_lim = "500"
         }
         [
-            position = 8368, 8176
-        ]
-
-        component src_scada_input Voltage_reference {
-            max = "450"
-            min = "240"
-            unit = ""
-        }
-        [
-            position = 8200, 8232
+            position = 8464, 8104
         ]
 
         component gen_sum Sum1 {
             signs = "-+"
         }
         [
-            position = 8280, 8176
+            position = 8376, 8104
         ]
 
         component gen_sum Sum2 {
             signs = "-+"
         }
         [
-            position = 8472, 8168
+            position = 8568, 8096
         ]
 
         component gen_pid_controller "PID controller2" {
@@ -240,14 +127,316 @@ model "boost_current_control_resistive_load" {
             lower_sat_lim = "0"
         }
         [
-            position = 8552, 8168
+            position = 8648, 8096
+        ]
+
+        component "core/Single Pole Single Throw Contactor" Desliga_boost {
+            ctrl_src = "Model"
+            initial_state = "on"
+        }
+        [
+            position = 8120, 8544
+            size = 64, 32
+        ]
+
+        component "core/Single Pole Single Throw Contactor" Carga {
+            ctrl_src = "Model"
+        }
+        [
+            position = 8848, 8592
+            rotation = right
+            size = 64, 32
+        ]
+
+        component src_scada_input Aciona_carga {
+            unit = ""
+        }
+        [
+            position = 8920, 8592
+            scale = -1, 1
+        ]
+
+        component pas_resistor RL2 {
+            resistance = "4.813"
+        }
+        [
+            position = 8848, 8680
+            rotation = right
+        ]
+
+        component gen_c_function Protecoes {
+            execution_rate = "50e-6"
+            global_variables = "real Iin;real I_overload;real habilita_protecao;real overvoltage;real undervoltage;"
+            in_terminal_dimensions = "inherit;inherit;inherit"
+            in_terminal_dimensions_str = "Ia1 inherit;reset inherit;bat_v inherit"
+            in_terminal_labels = "[(\'Ia1\', False), (\'reset\', False), (\'bat_v\', False)]"
+            in_terminal_properties = "inherit Ia1;inherit reset;inherit bat_v;"
+            init_fnc = "/*Begin code section*/
+habilita_protecao = 1;
+I_overload = 200.0;
+overvoltage = 280;
+undervoltage = 200;
+/*End code section*/"
+            no_feed_inputs = "[\'\']"
+            no_feed_outputs = "[\'\']"
+            out_terminal_dimensions = "inherit"
+            out_terminal_dimensions_str = "protecao inherit"
+            out_terminal_labels = "[(\'protecao\', False)]"
+            out_terminal_properties = "inherit protecao;"
+            output_fnc = "/*Begin code section*/
+Iin = Ia1;
+if (Iin>I_overload || bat_v>overvoltage || bat_v<undervoltage)
+{
+    habilita_protecao = 0;
+}
+else 
+{
+    if (reset == 1) habilita_protecao = 1;
+}
+        
+protecao = habilita_protecao;
+/*End code section*/"
+        }
+        [
+            position = 8984, 8080
+            size = 48, 64
+        ]
+
+        component src_scada_input Reset {
+            execution_rate = "50e-6"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 8776, 8144
+        ]
+
+        component "core/Voltage Measurement" Battery_voltage {
+            execution_rate = "50e-6"
+            sig_output = "True"
+        }
+        [
+            position = 7840, 8632
+            rotation = right
+            size = 64, 32
+        ]
+
+        component gen_digital_probe Protecao {
+        }
+        [
+            position = 9064, 8112
+        ]
+
+        component src_scada_input Enable {
+            execution_rate = "50e-6"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 7904, 8264
         ]
 
         component gen_digital_probe Enabled {
         }
         [
-            position = 8392, 8328
-            scale = -1, 1
+            position = 8184, 8280
+        ]
+
+        component gen_c_function Control {
+            execution_rate = "50e-6"
+            global_variables = "real uv0;real uv1;real ev0;real ev1;real u1;real ei0;real ei1;real kv0;real kv1;real ki0;real ki1;real flag;real step;"
+            in_terminal_dimensions = "inherit;inherit;inherit;inherit;inherit"
+            in_terminal_dimensions_str = "v_ref inherit;v_out inherit;i_in inherit;protecao inherit;en_signal inherit"
+            in_terminal_labels = "[(\'v_ref\', True), (\'v_out\', True), (\'i_in\', True), (\'protecao\', True), (\'en_signal\', True)]"
+            in_terminal_properties = "inherit v_ref;inherit v_out;inherit i_in;inherit protecao;inherit en_signal;"
+            init_fnc = "/*Begin code section*/
+uv0=0;
+uv1=0;
+ev0=0;
+ev1=0;
+u0=0;
+u1=0;
+ei0=0;
+ei1=0;
+flag = 0;
+
+kv0 = 0.555806921;
+kv1 = -0.55235238;
+ki0 = 5.611484217e-4;
+ki1 = -4.9952015e-4;
+/*End code section*/"
+            no_feed_inputs = "[\'\']"
+            no_feed_outputs = "[\'\']"
+            out_terminal_dimensions = "inherit;inherit"
+            out_terminal_dimensions_str = "u0 inherit;enable inherit"
+            out_terminal_labels = "[(\'u0\', True), (\'enable\', True)]"
+            out_terminal_properties = "inherit u0;inherit enable;"
+            output_fnc = "/*Begin code section*/
+/*if (v_ref != v_ref0 && flag == 0)
+    {
+        step = v_ref - v_ref0;
+        flag = 1;
+    }
+if (flag == 1)
+    {
+        v_ref0 = v_ref0+(0.0001*step);
+    }
+    if (step>0)
+    {
+        if (v_ref0 >= v_ref)
+        {
+            flag = 0;
+            v_ref0 = v_ref;
+        }
+    }
+    if (step<0)
+    {
+        if (v_ref0 <= v_ref)
+        {
+            flag = 0;
+            v_ref0 = v_ref;
+        }
+    }
+if (v_ref0 >= v_ref)
+    {
+        flag = 0;
+        v_ref0 = v_ref;
+    }
+*/
+if (protecao == 0 || en_signal ==0)
+    {
+        enable = 0;
+        uv0=0;
+        uv1=0;
+        ev0=0;
+        ev1=0;
+        u0=0;
+        u1=0;
+        ei0=0;
+        ei1=0;
+    }
+    else if (v_ref==240.0)
+    {
+        uv0=0;
+        uv1=0;
+        ev0=0;
+        ev1=0;
+        u0=0;
+        u1=0;
+        ei0=0;
+        ei1=0;
+        enable = 1;
+    }
+        else
+        {
+        ev0=v_ref-v_out;
+
+        uv0 = uv1 + ev0*kv0 + ev1*kv1;
+        uv1 = uv0;
+        ev1 = ev0;
+
+            if (uv0>150) uv0 = 150;
+            
+        ei0 = uv0-i_in;
+        
+        u0 = u1 + ei0*ki0 + ei1*ki1;
+        u1 = u0;
+        ei1 = ei0;
+
+        if (u0>0.98) u0 = 0.98;
+            enable = 1;
+        }
+/*End code section*/"
+        }
+        [
+            position = 8024, 8184
+            size = 64, 384
+        ]
+
+        component gen_probe V_ref_calc {
+        }
+        [
+            position = 8032, 7872
+        ]
+
+        component src_scada_input ramp {
+            execution_rate = "50e-6"
+            format = "int"
+            max = "1"
+            min = "0"
+            signal_type = "int"
+            unit = ""
+        }
+        [
+            position = 7696, 8008
+        ]
+
+        component src_scada_input Voltage_reference {
+            execution_rate = "50e-6"
+            max = "450"
+            min = "240"
+            unit = ""
+        }
+        [
+            position = 7696, 8064
+        ]
+
+        component gen_c_function Ramp_energization {
+            execution_rate = "50e-6"
+            global_variables = "real step;real flag;"
+            in_terminal_dimensions = "inherit;inherit"
+            in_terminal_dimensions_str = "rampa inherit;v_ref_in inherit"
+            in_terminal_labels = "[(\'rampa\', False), (\'v_ref_in\', False)]"
+            in_terminal_properties = "inherit rampa;inherit v_ref_in;"
+            no_feed_inputs = "[\'\']"
+            no_feed_outputs = "[\'\']"
+            out_terminal_dimensions = "inherit"
+            out_terminal_dimensions_str = "v_ref_out inherit"
+            out_terminal_labels = "[(\'v_ref_out\', False)]"
+            out_terminal_properties = "inherit v_ref_out;"
+            output_fnc = "/*Begin code section*/
+if (rampa == 1)
+{
+    if (flag ==1)
+    {
+        v_ref_out = v_ref_out + 0.0001*step;
+    }
+    else if (v_ref_out != v_ref_in)
+    {
+        step = v_ref_in - v_ref_out;
+        flag = 1;
+    }
+    
+    if (step>0)
+    {
+        if (v_ref_out >=v_ref_in)
+        {
+            v_ref_out = v_ref_in;
+            flag = 0;
+        }
+    }
+    
+    if (step<0)
+    {
+        if (v_ref_out <= v_ref_in)
+        {
+            v_ref_out = v_ref_in;
+            flag = 0;
+        }
+    }
+}
+else v_ref_out = v_ref_in;
+/*End code section*/"
+        }
+        [
+            position = 7824, 8024
+            size = 48, 64
         ]
 
         tag Goto1 {
@@ -257,7 +446,7 @@ model "boost_current_control_resistive_load" {
             direction = in
         }
         [
-            position = 8896, 8528
+            position = 9088, 8608
         ]
 
         tag Goto2 {
@@ -267,28 +456,8 @@ model "boost_current_control_resistive_load" {
             direction = in
         }
         [
-            position = 8232, 8376
+            position = 8224, 8464
             rotation = left
-        ]
-
-        tag From1 {
-            value = "Output_voltage"
-            scope = global
-            kind = sp
-            direction = out
-        }
-        [
-            position = 8184, 8168
-        ]
-
-        tag From2 {
-            value = "Input_current"
-            scope = global
-            kind = sp
-            direction = out
-        }
-        [
-            position = 8368, 8112
         ]
 
         tag From3 {
@@ -298,7 +467,63 @@ model "boost_current_control_resistive_load" {
             direction = out
         }
         [
-            position = 8392, 8280
+            position = 8488, 8424
+            rotation = right
+        ]
+
+        tag From5 {
+            value = "Input_current"
+            scope = global
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8784, 8064
+            size = 96, 20
+        ]
+
+        tag Goto4 {
+            value = "Battery_voltage"
+            scope = global
+            kind = sp
+            direction = in
+        }
+        [
+            position = 7936, 8632
+            size = 97, 20
+        ]
+
+        tag From6 {
+            value = "Battery_voltage"
+            scope = global
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8880, 8112
+            size = 96, 20
+        ]
+
+        tag From1 {
+            value = "Output_voltage"
+            scope = global
+            kind = sp
+            direction = out
+        }
+        [
+            position = 7872, 8104
+            size = 98, 20
+        ]
+
+        tag From2 {
+            value = "Input_current"
+            scope = global
+            kind = sp
+            direction = out
+        }
+        [
+            position = 7872, 8184
+            size = 99, 20
         ]
 
         tag Goto3 {
@@ -308,99 +533,231 @@ model "boost_current_control_resistive_load" {
             direction = in
         }
         [
-            position = 8632, 8168
+            position = 8216, 8008
         ]
 
-        junction Junction2 pe
+        tag Goto5 {
+            value = "protecao"
+            scope = global
+            kind = sp
+            direction = in
+        }
         [
-            position = 8656, 8640
+            position = 9104, 8080
+        ]
+
+        tag From7 {
+            value = "protecao"
+            scope = global
+            kind = sp
+            direction = out
+        }
+        [
+            position = 7872, 8344
+            size = 99, 20
+        ]
+
+        tag Goto6 {
+            value = "enable"
+            scope = global
+            kind = sp
+            direction = in
+        }
+        [
+            position = 8192, 8360
+        ]
+
+        tag From8 {
+            value = "enable"
+            scope = global
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8400, 8480
+        ]
+
+        tag From9 {
+            value = "protecao"
+            scope = global
+            kind = sp
+            direction = out
+        }
+        [
+            position = 8120, 8472
+            rotation = right
         ]
 
         junction Junction4 pe
         [
-            position = 8744, 8640
-        ]
-
-        junction Junction7 sp
-        [
-            position = 8464, 8384
-        ]
-
-        junction Junction8 pe
-        [
-            position = 8656, 8448
+            position = 8744, 8744
         ]
 
         junction Junction9 pe
         [
-            position = 8744, 8448
+            position = 8744, 8544
         ]
 
-        connect Cout.n_node Junction2 as Connection34
+        junction Junction10 pe
         [
-            breakpoints = 8656, 8592
+            position = 8848, 8744
         ]
-        connect Junction2 Boost.b_out as Connection35
+
+        junction Junction11 pe
         [
-            breakpoints = 8720, 8640
+            position = 8848, 8544
         ]
-        connect Lin.n_node Boost.a_in as Connection37
-        connect Boost.b_in Input.n_node as Connection38
+
+        junction Junction13 pe
+        [
+            position = 8656, 8544
+        ]
+
+        junction Junction14 pe
+        [
+            position = 8656, 8744
+        ]
+
+        junction Junction19 pe
+        [
+            position = 8040, 8544
+        ]
+
+        junction Junction20 pe
+        [
+            position = 8040, 8776
+        ]
+
+        junction Junction21 sp
+        [
+            position = 9024, 8080
+        ]
+
+        junction Junction22 sp
+        [
+            position = 8136, 8360
+        ]
+
+        junction Junction23 sp
+        [
+            position = 7904, 8024
+        ]
+
         connect RL.n_node Junction4 as Connection44
-        connect Junction4 Junction2 as Connection45
-        connect Vout.n_node Junction4 as Connection46
         connect Goto1 Vout.out as Connection47
-        connect Ia1.p_node Input.p_node as Connection52
-        connect Ia1.n_node Lin.p_node as Connection53
         connect Goto2 Ia1.out as Connection54
-        connect From1 Sum1.in as Connection48
         connect Sum1.out "PID controller1.in" as Connection50
-        connect Voltage_reference.out Sum1.in1 as Connection49
         connect "PID controller1.out" Sum2.in1 as Connection55
-        connect From2 Sum2.in as Connection56
         connect "PID controller2.in" Sum2.out as Connection57
-        connect Goto3 "PID controller2.out" as Connection58
-        connect From3 Boost.In as Connection59
-        connect Enable.out Junction7 as Connection69
-        connect Junction7 Boost.En as Connection70
-        connect Enabled.in Junction7 as Connection71
-        [
-            breakpoints = 8464, 8328; 8464, 8376
-        ]
-        connect Cout.p_node Junction8 as Connection74
-        connect Junction8 Boost.a_out as Connection75
-        [
-            breakpoints = 8720, 8448; 8720, 8448
-        ]
         connect RL.p_node Junction9 as Connection77
-        connect Junction9 Junction8 as Connection78
-        connect Vout.p_node Junction9 as Connection79
+        connect Desliga_boost.a_out Ia1.p_node as Connection81
+        connect Vout.n_node Junction10 as Connection82
+        connect Junction10 Junction4 as Connection83
+        connect RL2.n_node Junction10 as Connection84
+        connect RL2.p_node Carga.a_out as Connection85
+        connect Vout.p_node Junction11 as Connection86
+        connect Junction11 Junction9 as Connection87
+        connect Carga.a_in Junction11 as Connection88
+        connect Aciona_carga.out Carga.ctrl_in as Connection90
+        connect From5 Protecoes.Ia1 as Connection91
+        connect Junction9 Junction13 as Connection108
+        [
+            breakpoints = 8744, 8544
+        ]
+        connect Junction13 Cout.p_node as Connection109
+        [
+            breakpoints = 8656, 8544
+        ]
+        connect Boost.a_out Junction13 as Connection110
+        connect Cout.n_node Junction14 as Connection112
+        [
+            breakpoints = 8656, 8696
+        ]
+        connect Junction14 Junction4 as Connection113
+        [
+            breakpoints = 8656, 8744
+        ]
+        connect Boost.b_out Junction14 as Connection114
+        [
+            breakpoints = 8560, 8744; 8656, 8744
+        ]
+        connect Boost.a_in Lin.n_node as Connection141
+        [
+            breakpoints = 8392, 8544; 8376, 8544
+        ]
+        connect Ia1.n_node Lin.p_node as Connection142
+        connect Goto4 Battery_voltage.out as Connection143
+        connect Input.p_node Junction19 as Connection144
+        connect Junction19 Desliga_boost.a_in as Connection145
+        connect Battery_voltage.p_node Junction19 as Connection146
+        connect Boost.b_in Junction20 as Connection147
+        [
+            breakpoints = 8392, 8776
+        ]
+        connect Junction20 Input.n_node as Connection148
+        connect Battery_voltage.n_node Junction20 as Connection149
+        connect From6 Protecoes.bat_v as Connection150
+        connect Reset.out Protecoes.reset as Connection151
+        [
+            breakpoints = 8808, 8080; 8944, 8080
+        ]
+        connect Protecoes.protecao Junction21 as Connection172
+        connect Junction21 Protecao.in as Connection173
+        [
+            breakpoints = 9024, 8080
+        ]
+        connect Goto5 Junction21 as Connection174
+        connect From3 Boost.In as Connection180
+        connect From8 Boost.En as Connection181
+        connect From9 Desliga_boost.ctrl_in as Connection187
+        connect From1 Control.v_out as Connection192
+        connect From2 Control.i_in as Connection193
+        connect Enable.out Control.protecao as Connection194
+        connect From7 Control.en_signal as Connection195
+        connect Control.u0 Goto3 as Connection196
+        connect Enabled.in Junction22 as Connection197
+        connect Junction22 Goto6 as Connection198
+        [
+            breakpoints = 8136, 8360
+        ]
+        connect Control.enable Junction22 as Connection199
+        connect ramp.out Ramp_energization.rampa as Connection201
+        connect Voltage_reference.out Ramp_energization.v_ref_in as Connection203
+        connect Ramp_energization.v_ref_out Junction23 as Connection205
+        connect Junction23 Control.v_ref as Connection206
+        connect V_ref_calc.in Junction23 as Connection207
     }
 
     logically_deleted {
-        "Bidiretional.Enable"
-        "Bidiretional.Lin"
-        "Bidiretional.Input"
-        "Bidiretional.Modulator"
-        "Bidiretional.RL"
-        "Bidiretional.Cout"
-        "Bidiretional.IGBT Leg1"
-        "Bidiretional.Junction1"
-        "Bidiretional.Junction2"
-        "Bidiretional.Connection11"
-        "Bidiretional.Connection3"
-        "Bidiretional.Connection5"
-        "Bidiretional.Connection12"
-        "Bidiretional.Connection6"
-        "Bidiretional.Connection13"
-        "Bidiretional.Connection2"
-        "Bidiretional.Connection10"
-        "Bidiretional.Connection1"
-        "Bidiretional.Connection9"
-        "Bidiretional.Connection7"
+        "PID controller1"
+        "Sum1"
+        "Sum2"
+        "PID controller2"
+        "Connection50"
+        "Connection55"
+        "Connection57"
     }
 
     default {
+        gen_c_function {
+            in_terminal_properties = "real in;"
+            in_terminal_labels = ""
+            out_terminal_properties = "real out;"
+            out_terminal_labels = ""
+            no_feed_inputs = ""
+            no_feed_outputs = ""
+            in_terminal_dimensions = ""
+            in_terminal_dimensions_str = ""
+            out_terminal_dimensions = ""
+            out_terminal_dimensions_str = ""
+            output_fnc = ""
+            update_fnc = ""
+            init_fnc = ""
+            global_variables = ""
+            parameters = ""
+            execution_rate = "inherit"
+        }
+
         gen_digital_probe {
             override_signal_name = "False"
             signal_name = ""
@@ -423,6 +780,16 @@ model "boost_current_control_resistive_load" {
             lower_sat_lim = "-1"
             enb_anti_windup_out = "False"
             signal_out_type = "inherit"
+            execution_rate = "inherit"
+        }
+
+        gen_probe {
+            addr = "0"
+            override_signal_name = "False"
+            signal_name = ""
+            signal_type = "generic"
+            streaming_en = "False"
+            streaming_er_idx = "0"
             execution_rate = "inherit"
         }
 
@@ -506,6 +873,41 @@ model "boost_current_control_resistive_load" {
             signal_name = ""
         }
 
+        "core/Single Pole Single Throw Contactor" {
+            ctrl_src = "Digital input"
+            Sa = "1"
+            Sa_logic = "active high"
+            enable_fb_out = "False"
+            fb_out_type = "real"
+            execution_rate = "inherit"
+            initial_state = "off"
+            on_delay = "0"
+            off_delay = "0"
+            switching = "any current"
+        }
+
+        "core/Voltage Measurement" {
+            bw_limit = "False"
+            frequency = "10e3"
+            comparator_enable = "False"
+            operator = "greater"
+            threshold = "0"
+            cmp_abs_value = "False"
+            feed_forward = "false"
+            sig_output = "False"
+            execution_rate = "100e-6"
+            addr = "0"
+            nd_msr_estimation = "false"
+            dev_cpl_msr = "false"
+            host_device = "0"
+            output_to_device = "0"
+            dev_cpl_index = "0"
+            dev_cpl_var_nb = "0"
+            visible = "True"
+            override_signal_name = "False"
+            signal_name = ""
+        }
+
         "core/Boost" {
             ctrl_src = "Digital inputs"
             op_mode = "Fixed carrier frequency"
@@ -530,65 +932,6 @@ model "boost_current_control_resistive_load" {
             ed_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.2e-3, 0.4*2.2e-3, 0.8*2.2e-3, 0.68*2.2e-3, 0.9*2.2e-3], [0.65*2.2e-3, 0.9*2.2e-3, 1.2*2.2e-3, 1.5*2.2e-3, 1.7*2.2e-3], [0.9*2.2e-3, 1.3*2.2e-3, 1.7*2.2e-3, 1.9*2.2e-3, 2.25*2.2e-3], [1.1*2.2e-3, 1.7*2.2e-3, 2.1*2.2e-3, 2.3*2.2e-3, 2.5*2.2e-3]]"
             loss_exec_rate = "100e-6"
             show_monitoring = "false"
-        }
-
-        "core/IGBT Leg" {
-            ctrl_src = "Digital input per switch"
-            op_mode = "Fixed carrier frequency"
-            carrier_freq = "10000.0"
-            carr_ph_offset = "0.0"
-            d_time = "5e-6"
-            ref_sig_min_max = "[-1.0, 1.0]"
-            execution_rate = "inherit"
-            S_top = "1"
-            S_top_logic = "active high"
-            S_bot = "2"
-            S_bot_logic = "active high"
-            S_top_I = "False"
-            S_bot_I = "False"
-            delay_enabled = "False"
-            fixed_delay = "1e-6"
-            var_delay_lut = "[-10.0, 1e-6, 10.0, 1e-6]"
-            preview_var_delay = "Preview"
-            show_monitoring = "false"
-            losses_estimation = "False"
-            Vce = "1.3"
-            Rce = "0"
-            Vd = "1.2"
-            Rd = "0"
-            i_sw = "[0.0, 6.0, 12.0, 18.0, 24.0]"
-            v_sw = "[0.0, 600.0]"
-            temp_sw = "[25.0, 50.0, 75.0, 100.0, 125.0]"
-            et_on_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*3.8e-3, 0.4*3.8e-3, 0.8*3.8e-3, 0.68*3.8e-3, 0.9*3.8e-3], [0.65*3.8e-3, 0.9*3.8e-3, 1.2*3.8e-3, 1.5*3.8e-3, 1.7*3.8e-3], [0.9*3.8e-3, 1.3*3.8e-3, 1.7*3.8e-3, 1.9*3.8e-3, 2.25*3.8e-3], [1.1*3.8e-3, 1.7*3.8e-3, 2.1*3.8e-3, 2.3*3.8e-3, 2.5*3.8e-3]]"
-            et_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.1e-3, 0.4*2.1e-3, 0.8*2.1e-3, 0.68*2.1e-3, 0.9*2.1e-3], [0.65*2.1e-3, 0.9*2.1e-3, 1.2*2.1e-3, 1.5*2.1e-3, 1.7*2.1e-3], [0.9*2.1e-3, 1.3*2.1e-3, 1.7*2.1e-3, 1.9*2.1e-3, 2.25*2.1e-3], [1.1*2.1e-3, 1.7*2.1e-3, 2.1*2.1e-3, 2.3*2.1e-3, 2.5*2.1e-3]]"
-            ed_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.2e-3, 0.4*2.2e-3, 0.8*2.2e-3, 0.68*2.2e-3, 0.9*2.2e-3], [0.65*2.2e-3, 0.9*2.2e-3, 1.2*2.2e-3, 1.5*2.2e-3, 1.7*2.2e-3], [0.9*2.2e-3, 1.3*2.2e-3, 1.7*2.2e-3, 1.9*2.2e-3, 2.25*2.2e-3], [1.1*2.2e-3, 1.7*2.2e-3, 2.1*2.2e-3, 2.3*2.2e-3, 2.5*2.2e-3]]"
-            loss_exec_rate = "100e-6"
-            show_cnt_out = "False"
-            PESB_Optimization = "True"
-            _control_property = "all high"
-            dtv_flag_en = "True"
-        }
-
-        "core/Voltage Measurement" {
-            bw_limit = "False"
-            frequency = "10e3"
-            comparator_enable = "False"
-            operator = "greater"
-            threshold = "0"
-            cmp_abs_value = "False"
-            feed_forward = "false"
-            sig_output = "False"
-            execution_rate = "100e-6"
-            addr = "0"
-            nd_msr_estimation = "false"
-            dev_cpl_msr = "false"
-            host_device = "0"
-            output_to_device = "0"
-            dev_cpl_index = "0"
-            dev_cpl_var_nb = "0"
-            visible = "True"
-            override_signal_name = "False"
-            signal_name = ""
         }
     }
 }
