@@ -2,7 +2,7 @@ version = 4.2
 
 //
 // Saved by sw version: 2018.4
-// Save timestamp: 16-Jan-2019 @ 04:43:57 PM
+// Save timestamp: 21-Jan-2019 @ 02:10:18 PM
 //
 
 model "boost_voltage_control_resistive_load" {
@@ -31,107 +31,10 @@ model "boost_voltage_control_resistive_load" {
     }
 
     component Subsystem Root {
-        component Subsystem Bidiretional {
-            layout = dynamic
-            component src_scada_input Enable {
-                format = "int"
-                max = "1"
-                min = "0"
-                signal_type = "int"
-                unit = ""
-            }
-            [
-                position = 8240, 8144
-                scale = -1, 1
-            ]
-
-            component pas_inductor Lin {
-                inductance = "24e-5"
-            }
-            [
-                position = 7992, 8192
-            ]
-
-            component src_voltage Input {
-            }
-            [
-                position = 7904, 8232
-                rotation = right
-            ]
-
-            component src_scada_input Modulator {
-                max = "1"
-                min = "0"
-                unit = ""
-            }
-            [
-                position = 8240, 8200
-                scale = -1, 1
-            ]
-
-            component pas_resistor RL {
-                resistance = "4.813"
-            }
-            [
-                position = 8480, 8192
-                rotation = right
-            ]
-
-            component pas_capacitor Cout {
-                capacitance = "76.54e-6"
-            }
-            [
-                position = 8376, 8192
-                rotation = right
-            ]
-
-            component "core/IGBT Leg" "IGBT Leg1" {
-                carr_ph_offset = "180"
-                carrier_freq = "20000.0"
-                ctrl_src = "Internal modulator"
-                d_time = "5e-7"
-                ref_sig_min_max = "[0, 1.0]"
-            }
-            [
-                position = 8112, 8192
-                scale = -1, 1
-                size = 80, 192
-            ]
-
-            junction Junction1 pe
-            [
-                position = 8376, 8088
-            ]
-
-            junction Junction2 pe
-            [
-                position = 8376, 8296
-            ]
-
-            connect Cout.n_node Junction2 as Connection11
-            [
-                breakpoints = 8376, 8232; 8376, 8296
-            ]
-            connect Lin.n_node "IGBT Leg1.a_in" as Connection3
-            connect "IGBT Leg1.pos_out" Junction1 as Connection5
-            connect Modulator.out "IGBT Leg1.In" as Connection12
-            connect Junction1 RL.p_node as Connection6
-            connect Enable.out "IGBT Leg1.En" as Connection13
-            connect Input.n_node "IGBT Leg1.neg_out" as Connection2
-            connect Junction2 "IGBT Leg1.neg_out" as Connection10
-            connect Lin.p_node Input.p_node as Connection1
-            connect RL.n_node Junction2 as Connection9
-            connect Cout.p_node Junction1 as Connection7
-        }
-        [
-            position = 8744, 8256
-            size = 48, 48
-        ]
-
         component src_voltage Input {
         }
         [
-            position = 8240, 8504
+            position = 8136, 8504
             rotation = right
         ]
 
@@ -177,18 +80,18 @@ model "boost_voltage_control_resistive_load" {
             unit = ""
         }
         [
-            position = 8432, 8368
+            position = 8408, 8376
         ]
 
         component gen_pid_controller "PID controller1" {
             controller_type = "PI"
             enb_output_limit_out = "True"
-            ki = "2.47"
-            kp = "0.0007442"
+            ki = "1.168017392"
+            kp = "0.0004712"
             lower_sat_lim = "0"
         }
         [
-            position = 8416, 8288
+            position = 8416, 8240
         ]
 
         component "core/Voltage Measurement" Vout {
@@ -204,14 +107,28 @@ model "boost_voltage_control_resistive_load" {
             signs = "-+"
         }
         [
-            position = 8328, 8288
+            position = 8320, 8240
         ]
 
         component src_scada_input Voltage_reference {
             unit = ""
         }
         [
-            position = 8232, 8352
+            position = 8224, 8304
+        ]
+
+        component "core/Current Measurement" Ia1 {
+        }
+        [
+            position = 8224, 8448
+            size = 64, 32
+        ]
+
+        component gen_digital_probe Enabled {
+        }
+        [
+            position = 8408, 8320
+            scale = -1, 1
         ]
 
         tag Goto1 {
@@ -231,7 +148,7 @@ model "boost_voltage_control_resistive_load" {
             direction = out
         }
         [
-            position = 8240, 8280
+            position = 8240, 8232
         ]
 
         junction Junction1 pe
@@ -254,10 +171,11 @@ model "boost_voltage_control_resistive_load" {
             position = 8824, 8640
         ]
 
-        connect Lin.p_node Input.p_node as Connection19
+        junction Junction5 sp
         [
-            breakpoints = 8280, 8448; 8240, 8448
+            position = 8464, 8376
         ]
+
         connect Cout.p_node Junction1 as Connection27
         connect Boost.a_out Junction1 as Connection29
         connect Cout.n_node Junction2 as Connection34
@@ -270,7 +188,6 @@ model "boost_voltage_control_resistive_load" {
         ]
         connect Lin.n_node Boost.a_in as Connection37
         connect Boost.b_in Input.n_node as Connection38
-        connect Enable.out Boost.En as Connection39
         connect Junction1 Junction3 as Connection41
         [
             breakpoints = 8720, 8448
@@ -285,32 +202,23 @@ model "boost_voltage_control_resistive_load" {
         connect Voltage_reference.out Sum1.in1 as Connection49
         connect Sum1.out "PID controller1.in" as Connection50
         connect "PID controller1.out" Boost.In as Connection51
-    }
-
-    logically_deleted {
-        "Bidiretional.Junction1"
-        "Bidiretional.Enable"
-        "Bidiretional.Junction2"
-        "Bidiretional.Lin"
-        "Bidiretional.Input"
-        "Bidiretional.Modulator"
-        "Bidiretional.RL"
-        "Bidiretional.Cout"
-        "Bidiretional.IGBT Leg1"
-        "Bidiretional.Connection11"
-        "Bidiretional.Connection3"
-        "Bidiretional.Connection5"
-        "Bidiretional.Connection12"
-        "Bidiretional.Connection6"
-        "Bidiretional.Connection13"
-        "Bidiretional.Connection2"
-        "Bidiretional.Connection10"
-        "Bidiretional.Connection1"
-        "Bidiretional.Connection9"
-        "Bidiretional.Connection7"
+        connect Ia1.n_node Lin.p_node as Connection52
+        connect Ia1.p_node Input.p_node as Connection53
+        connect Enable.out Junction5 as Connection54
+        connect Junction5 Boost.En as Connection55
+        connect Enabled.in Junction5 as Connection56
     }
 
     default {
+        gen_digital_probe {
+            override_signal_name = "False"
+            signal_name = ""
+            streaming_en = "False"
+            addr = "0"
+            streaming_er_idx = "0"
+            execution_rate = "inherit"
+        }
+
         gen_pid_controller {
             controller_type = "PID"
             kp = "1"
@@ -385,6 +293,50 @@ model "boost_voltage_control_resistive_load" {
             init_phase = "0.0"
         }
 
+        "core/Voltage Measurement" {
+            bw_limit = "False"
+            frequency = "10e3"
+            comparator_enable = "False"
+            operator = "greater"
+            threshold = "0"
+            cmp_abs_value = "False"
+            feed_forward = "false"
+            sig_output = "False"
+            execution_rate = "100e-6"
+            addr = "0"
+            nd_msr_estimation = "false"
+            dev_cpl_msr = "false"
+            host_device = "0"
+            output_to_device = "0"
+            dev_cpl_index = "0"
+            dev_cpl_var_nb = "0"
+            visible = "True"
+            override_signal_name = "False"
+            signal_name = ""
+        }
+
+        "core/Current Measurement" {
+            bw_limit = "False"
+            frequency = "10e3"
+            comparator_enable = "False"
+            operator = "greater"
+            threshold = "0"
+            cmp_abs_value = "False"
+            feed_forward = "false"
+            sig_output = "False"
+            execution_rate = "100e-6"
+            addr = "0"
+            nd_msr_estimation = "false"
+            dev_cpl_msr = "false"
+            host_device = "0"
+            output_to_device = "0"
+            dev_cpl_index = "0"
+            dev_cpl_var_nb = "0"
+            visible = "True"
+            override_signal_name = "False"
+            signal_name = ""
+        }
+
         "core/Boost" {
             ctrl_src = "Digital inputs"
             op_mode = "Fixed carrier frequency"
@@ -409,65 +361,6 @@ model "boost_voltage_control_resistive_load" {
             ed_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.2e-3, 0.4*2.2e-3, 0.8*2.2e-3, 0.68*2.2e-3, 0.9*2.2e-3], [0.65*2.2e-3, 0.9*2.2e-3, 1.2*2.2e-3, 1.5*2.2e-3, 1.7*2.2e-3], [0.9*2.2e-3, 1.3*2.2e-3, 1.7*2.2e-3, 1.9*2.2e-3, 2.25*2.2e-3], [1.1*2.2e-3, 1.7*2.2e-3, 2.1*2.2e-3, 2.3*2.2e-3, 2.5*2.2e-3]]"
             loss_exec_rate = "100e-6"
             show_monitoring = "false"
-        }
-
-        "core/Voltage Measurement" {
-            bw_limit = "False"
-            frequency = "10e3"
-            comparator_enable = "False"
-            operator = "greater"
-            threshold = "0"
-            cmp_abs_value = "False"
-            feed_forward = "false"
-            sig_output = "False"
-            execution_rate = "100e-6"
-            addr = "0"
-            nd_msr_estimation = "false"
-            dev_cpl_msr = "false"
-            host_device = "0"
-            output_to_device = "0"
-            dev_cpl_index = "0"
-            dev_cpl_var_nb = "0"
-            visible = "True"
-            override_signal_name = "False"
-            signal_name = ""
-        }
-
-        "core/IGBT Leg" {
-            ctrl_src = "Digital input per switch"
-            op_mode = "Fixed carrier frequency"
-            carrier_freq = "10000.0"
-            carr_ph_offset = "0.0"
-            d_time = "5e-6"
-            ref_sig_min_max = "[-1.0, 1.0]"
-            execution_rate = "inherit"
-            S_top = "1"
-            S_top_logic = "active high"
-            S_bot = "2"
-            S_bot_logic = "active high"
-            S_top_I = "False"
-            S_bot_I = "False"
-            delay_enabled = "False"
-            fixed_delay = "1e-6"
-            var_delay_lut = "[-10.0, 1e-6, 10.0, 1e-6]"
-            preview_var_delay = "Preview"
-            show_monitoring = "false"
-            losses_estimation = "False"
-            Vce = "1.3"
-            Rce = "0"
-            Vd = "1.2"
-            Rd = "0"
-            i_sw = "[0.0, 6.0, 12.0, 18.0, 24.0]"
-            v_sw = "[0.0, 600.0]"
-            temp_sw = "[25.0, 50.0, 75.0, 100.0, 125.0]"
-            et_on_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*3.8e-3, 0.4*3.8e-3, 0.8*3.8e-3, 0.68*3.8e-3, 0.9*3.8e-3], [0.65*3.8e-3, 0.9*3.8e-3, 1.2*3.8e-3, 1.5*3.8e-3, 1.7*3.8e-3], [0.9*3.8e-3, 1.3*3.8e-3, 1.7*3.8e-3, 1.9*3.8e-3, 2.25*3.8e-3], [1.1*3.8e-3, 1.7*3.8e-3, 2.1*3.8e-3, 2.3*3.8e-3, 2.5*3.8e-3]]"
-            et_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.1e-3, 0.4*2.1e-3, 0.8*2.1e-3, 0.68*2.1e-3, 0.9*2.1e-3], [0.65*2.1e-3, 0.9*2.1e-3, 1.2*2.1e-3, 1.5*2.1e-3, 1.7*2.1e-3], [0.9*2.1e-3, 1.3*2.1e-3, 1.7*2.1e-3, 1.9*2.1e-3, 2.25*2.1e-3], [1.1*2.1e-3, 1.7*2.1e-3, 2.1*2.1e-3, 2.3*2.1e-3, 2.5*2.1e-3]]"
-            ed_off_table_out = "[[0.0, 0.0275e-3, 0.15e-3, 0.275e-3, 0.3e-3], [0.35*2.2e-3, 0.4*2.2e-3, 0.8*2.2e-3, 0.68*2.2e-3, 0.9*2.2e-3], [0.65*2.2e-3, 0.9*2.2e-3, 1.2*2.2e-3, 1.5*2.2e-3, 1.7*2.2e-3], [0.9*2.2e-3, 1.3*2.2e-3, 1.7*2.2e-3, 1.9*2.2e-3, 2.25*2.2e-3], [1.1*2.2e-3, 1.7*2.2e-3, 2.1*2.2e-3, 2.3*2.2e-3, 2.5*2.2e-3]]"
-            loss_exec_rate = "100e-6"
-            show_cnt_out = "False"
-            PESB_Optimization = "True"
-            _control_property = "all high"
-            dtv_flag_en = "True"
         }
     }
 }
